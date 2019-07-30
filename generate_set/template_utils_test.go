@@ -1,55 +1,59 @@
 package main
 
 import (
-	"reflect"
 	"testing"
-	"time"
 )
 
 func TestMakeNewSetType(t *testing.T) {
 	var testCases = []struct {
-		given    reflect.Type
-		expected SetType
+		givenType       string
+		givenImportPath string
+		expected        SetType
 	}{
 		{
-			given: reflect.TypeOf(int(1)),
+			givenType:       "int",
+			givenImportPath: "",
 			expected: SetType{
 				DataType:  "int",
 				TitleName: "Int",
 			},
 		},
 		{
-			given: reflect.TypeOf(int64(1)),
+			givenType:       "int64",
+			givenImportPath: "thing/thing/thing",
 			expected: SetType{
-				DataType:  "int64",
-				TitleName: "Int64",
+				DataType:   "int64",
+				TitleName:  "Int64",
+				ImportPath: "thing/thing/thing",
 			},
 		},
 		{
-			given: reflect.TypeOf(time.Time{}),
+			givenType:       "time.Time",
+			givenImportPath: "",
 			expected: SetType{
 				DataType:  "time.Time",
 				TitleName: "TimeTime",
 			},
 		},
 		{
-			given: reflect.TypeOf([]interface{}{}),
+			givenType:       "interface{}",
+			givenImportPath: "",
 			expected: SetType{
-				DataType:  "[]interface {}",
-				TitleName: "SliceOfInterface",
+				DataType:  "interface{}",
+				TitleName: "Interface",
 			},
 		},
 	}
 
 	for i, testCase := range testCases {
-		result, _ := NewSetType(testCase.given)
+		result := NewSetType(testCase.givenType, testCase.givenImportPath)
 		if !testCase.expected.Equal(result) {
-			t.Error("test", i, "given", testCase.given, "expected", testCase.expected, "result", result)
+			t.Error("test", i, "given", testCase.givenType, "and", testCase.givenImportPath, "expected", testCase.expected, "result", result)
 		}
 	}
 }
 
-func TestMakeSimpleSetTypeTitleName(t *testing.T) {
+func TestMakeSetTypeTitleName(t *testing.T) {
 	var testCases = []struct {
 		given    string
 		expected string
@@ -81,7 +85,7 @@ func TestMakeSimpleSetTypeTitleName(t *testing.T) {
 	}
 
 	for i, testCase := range testCases {
-		result := makeSimpleSetTypeTitleName(testCase.given)
+		result := makeSetTypeTitleName(testCase.given)
 		if testCase.expected != result {
 			t.Error("test", i, "given", testCase.given, "expected", testCase.expected, "result", result)
 		}

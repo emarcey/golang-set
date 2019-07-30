@@ -1,5 +1,11 @@
 package mapset
 
+{{ if ne .ImportPath "" }}
+import (
+	"{{ $import}}"
+)
+{{ end }}
+
 // Iterator defines an iterator over a Set, its C channel can be used to range over the Set's
 // elements.
 type {{ .TitleName }}Iterator struct {

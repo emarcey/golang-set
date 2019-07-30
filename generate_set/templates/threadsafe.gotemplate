@@ -1,6 +1,9 @@
 package mapset
 
-import "sync"
+import (
+    "sync"
+    {{ if ne .ImportPath "" }} "{{ $import}}" {{ end }}
+)
 
 type threadSafe{{ .TitleName }}Set struct {
     s threadUnsafe{{ .TitleName }}Set
