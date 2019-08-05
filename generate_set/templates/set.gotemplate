@@ -1,8 +1,8 @@
-package mapset
+package mapset{{ ToLower .TitleName }}
 
 {{ if ne .ImportPath "" }}
 import (
-    "{{ $import}}"
+    "{{ .ImportPath }}"
 )
 {{ end }}
 
@@ -107,7 +107,7 @@ type {{ .TitleName }}Set interface {
 
     // Returns an Iterator object that you can
     // use to range over the set.
-    Iterator() *Iterator
+    Iterator() *{{ .TitleName }}Iterator
 
     // Remove a single element from the set.
     Remove(i {{ .DataType }})
@@ -137,10 +137,12 @@ type {{ .TitleName }}Set interface {
     Pop() {{ .DataType }}
 
     // Returns all subsets of a given set (Power {{ .TitleName }}Set).
-    PowerSet() {{ .TitleName }}Set
+    // Not yet supported
+    // PowerSet() {{ .TitleName }}Set
 
     // Returns the Cartesian Product of two sets.
-    CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set
+    // Not yet supported
+    // CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set
 
     // Returns the members of the set as a slice.
     ToSlice() []{{ .DataType }}

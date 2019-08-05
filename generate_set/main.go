@@ -9,13 +9,21 @@ import (
 func generateSet() error {
 	var structName = flag.String("struct_name", "", "name of struct to generate")
 	var importPath = flag.String("import_path", "", "go")
+	var defaultValue = flag.String("default_value", "", "default value of struct")
+
+	flag.Parse()
 	if *structName == "" {
 		return NewEmptyFlagError("struct_name")
 	}
+	if *defaultValue == "" {
+		return NewEmptyFlagError("default_value")
+	}
 
-	_ = NewSetType(*structName, *importPath)
+	setType := NewSetType(*structName, *importPath, *defaultValue)
 
-	return nil
+	templateTypes := MakeTemplateTypes()
+
+	return CreateSet(setType, templateTypes)
 }
 
 func main() {

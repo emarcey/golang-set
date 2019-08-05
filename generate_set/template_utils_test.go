@@ -6,38 +6,44 @@ import (
 
 func TestMakeNewSetType(t *testing.T) {
 	var testCases = []struct {
-		givenType       string
-		givenImportPath string
-		expected        SetType
+		givenType         string
+		givenImportPath   string
+		givenDefaultValue string
+		expected          SetType
 	}{
 		{
-			givenType:       "int",
-			givenImportPath: "",
+			givenType:         "int",
+			givenImportPath:   "",
+			givenDefaultValue: "",
 			expected: SetType{
 				DataType:  "int",
 				TitleName: "Int",
 			},
 		},
 		{
-			givenType:       "int64",
-			givenImportPath: "thing/thing/thing",
+			givenType:         "int64",
+			givenImportPath:   "thing/thing/thing",
+			givenDefaultValue: "0",
 			expected: SetType{
-				DataType:   "int64",
-				TitleName:  "Int64",
-				ImportPath: "thing/thing/thing",
+				DataType:     "int64",
+				TitleName:    "Int64",
+				ImportPath:   "thing/thing/thing",
+				DefaultValue: "0",
 			},
 		},
 		{
-			givenType:       "time.Time",
-			givenImportPath: "",
+			givenType:         "time.Time",
+			givenImportPath:   "",
+			givenDefaultValue: "",
 			expected: SetType{
 				DataType:  "time.Time",
 				TitleName: "TimeTime",
 			},
 		},
 		{
-			givenType:       "interface{}",
-			givenImportPath: "",
+			givenType:         "interface{}",
+			givenImportPath:   "",
+			givenDefaultValue: "",
 			expected: SetType{
 				DataType:  "interface{}",
 				TitleName: "Interface",
@@ -46,9 +52,9 @@ func TestMakeNewSetType(t *testing.T) {
 	}
 
 	for i, testCase := range testCases {
-		result := NewSetType(testCase.givenType, testCase.givenImportPath)
+		result := NewSetType(testCase.givenType, testCase.givenImportPath, testCase.givenDefaultValue)
 		if !testCase.expected.Equal(result) {
-			t.Error("test", i, "given", testCase.givenType, "and", testCase.givenImportPath, "expected", testCase.expected, "result", result)
+			t.Error("test", i, "given", testCase.givenType, "and", testCase.givenImportPath, "and", testCase.givenDefaultValue, "expected", testCase.expected, "result", result)
 		}
 	}
 }

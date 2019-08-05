@@ -1,13 +1,12 @@
-package mapset
+package mapset{{ ToLower .TitleName }}
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"strings"
 
-	{{ if ne .ImportPath "" }} "{{ $import}}" {{ end }}
+	{{ if ne .ImportPath "" }} "{{ .ImportPath }} {{ end }}
 )
 
 type threadUnsafe{{ .TitleName }}Set map[{{ .DataType }}]struct{}
@@ -222,11 +221,13 @@ func (set *threadUnsafe{{ .TitleName }}Set) Pop() {{ .DataType }} {
 		delete(*set, item)
 		return item
 	}
-	return nil
+	return {{ .DefaultValue }}
 }
 
+/*
+// Not yet supported
 func (set *threadUnsafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
-	powSet := NewThreadUnsafeSet()
+	powSet := NewThreadUnsafe{{ .TitleName }}Set()
 	nullset := newThreadUnsafe{{ .TitleName }}Set()
 	powSet.Add(&nullset)
 
@@ -252,10 +253,13 @@ func (set *threadUnsafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
 
 	return powSet
 }
+*/
 
+/*
+// Not yet supported
 func (set *threadUnsafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set {
 	o := other.(*threadUnsafe{{ .TitleName }}Set)
-	cartProduct := NewThreadUnsafeSet()
+	cartProduct := NewThreadUnsafe{{ .TitleName }}Set()
 
 	for i := range *set {
 		for j := range *o {
@@ -266,6 +270,7 @@ func (set *threadUnsafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName
 
 	return cartProduct
 }
+*/
 
 func (set *threadUnsafe{{ .TitleName }}Set) ToSlice() []{{ .DataType }} {
 	keys := make([]{{ .DataType }}, 0, set.Cardinality())
@@ -305,12 +310,7 @@ func (set *threadUnsafe{{ .TitleName }}Set) UnmarshalJSON(b []byte) error {
 	}
 
 	for _, v := range i {
-		switch t := v.(type) {
-		case []{{ .DataType }}, map[string]{{ .DataType }}:
-			continue
-		default:
-			set.Add(t)
-		}
+		set.Add(v)
 	}
 
 	return nil

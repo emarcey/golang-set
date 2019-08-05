@@ -1,8 +1,8 @@
-package mapset
+package mapset{{ ToLower .TitleName }}
 
 {{ if ne .ImportPath "" }}
 import (
-	"{{ $import}}"
+	"{{ .ImportPath }}"
 )
 {{ end }}
 

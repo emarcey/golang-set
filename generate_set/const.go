@@ -14,6 +14,18 @@ const (
 	PTR_SET_TYPE_NAME   = "PointerOf%v"
 	SLICE_SET_TYPE_NAME = "SliceOf%v"
 	MAP_SET_TYPE_NAME   = "MapOf%vTo%v"
+
+	BASE_FILEPATH = "sets/%v_set"
+
+	ITERATOR_FILENAME     = "%v_iterator.go"
+	SET_FILENAME          = "%v_set.go"
+	THREADSAFE_FILENAME   = "%v_threadsafe.go"
+	THREADUNSAFE_FILENAME = "%v_threadunsafe.go"
+
+	ITERATOR_TEMPLATE     = "generate_set/templates/iterator.gotemplate"
+	SET_TEMPLATE          = "generate_set/templates/set.gotemplate"
+	THREADSAFE_TEMPLATE   = "generate_set/templates/threadsafe.gotemplate"
+	THREADUNSAFE_TEMPLATE = "generate_set/templates/threadunsafe.gotemplate"
 )
 
 var (

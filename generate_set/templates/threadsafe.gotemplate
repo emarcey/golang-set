@@ -1,8 +1,8 @@
-package mapset
+package mapset{{ ToLower .TitleName }}
 
 import (
     "sync"
-    {{ if ne .ImportPath "" }} "{{ $import}}" {{ end }}
+    {{ if ne .ImportPath "" }} "{{ .ImportPath }} {{ end }}
 )
 
 type threadSafe{{ .TitleName }}Set struct {
@@ -113,7 +113,7 @@ func (set *threadSafe{{ .TitleName }}Set) SymmetricDifference(other {{ .TitleNam
 
 func (set *threadSafe{{ .TitleName }}Set) Clear() {
     set.Lock()
-    set.s = newThreadUnsafeSet()
+    set.s = newThreadUnsafe{{ .TitleName }}Set()
     set.Unlock()
 }
 
@@ -202,18 +202,21 @@ func (set *threadSafe{{ .TitleName }}Set) String() string {
     return ret
 }
 
+/*
+// Not yet supported
 func (set *threadSafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
     set.RLock()
     unsafePowerSet := set.s.PowerSet().(*threadUnsafe{{ .TitleName }}Set)
     set.RUnlock()
 
-    ret := &threadSafe{{ .TitleName }}Set{s: newThreadUnsafeSet()}
+    ret := &threadSafe{{ .TitleName }}Set{s: newThreadUnsafe{{ .TitleName }}Set()}
     for subset := range unsafePowerSet.Iter() {
         unsafeSubset := subset.(*threadUnsafe{{ .TitleName }}Set)
         ret.Add(&threadSafe{{ .TitleName }}Set{s: *unsafeSubset})
     }
     return ret
 }
+*/
 
 func (set *threadSafe{{ .TitleName }}Set) Pop() {{ .DataType }} {
     set.Lock()
@@ -221,6 +224,8 @@ func (set *threadSafe{{ .TitleName }}Set) Pop() {{ .DataType }} {
     return set.s.Pop()
 }
 
+/*
+// Not yet supported
 func (set *threadSafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set {
     o := other.(*threadSafe{{ .TitleName }}Set)
 
@@ -233,6 +238,7 @@ func (set *threadSafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName }
     o.RUnlock()
     return ret
 }
+*/
 
 func (set *threadSafe{{ .TitleName }}Set) ToSlice() []{{ .DataType }} {
     keys := make([]{{ .DataType }}, 0, set.Cardinality())
