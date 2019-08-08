@@ -2,7 +2,7 @@ package mapset{{ ToLower .TitleName }}
 
 import (
     "sync"
-    {{ if ne .ImportPath "" }} "{{ .ImportPath }} {{ end }}
+    {{ if ne .ImportPath "" }} "{{ .ImportPath }}" {{ end }}
 )
 
 type threadSafe{{ .TitleName }}Set struct {
