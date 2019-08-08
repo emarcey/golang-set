@@ -1,0 +1,39 @@
+package mapset{{ ToLower .TitleName }}
+
+{{ if ne .ImportPath "" }}
+import (
+	"{{ .ImportPath }}"
+)
+{{ end }}
+
+// Iterator defines an iterator over a Set, its C channel can be used to range over the Set's
+// elements.
+type {{ .TitleName }}Iterator struct {
+	C    <-chan {{ .DataType }}
+	stop chan struct{}
+}
+
+// Stop stops the {{ .TitleName }}Iterator, no further elements will be received on C, C will be closed.
+func (i *{{ .TitleName }}Iterator) Stop() {
+	// Allows for Stop() to be called multiple times
+	// (close() panics when called on already closed channel)
+	defer func() {
+		recover()
+	}()
+
+	close(i.stop)
+
+	// Exhaust any remaining elements.
+	for range i.C {
+	}
+}
+
+// new{{ .TitleName }}Iterator returns a new {{ .TitleName }}Iterator instance together with its item and stop channels.
+func new{{ .TitleName }}Iterator() (*{{ .TitleName }}Iterator, chan<- {{ .DataType }}, <-chan struct{}) {
+	itemChan := make(chan {{ .DataType }})
+	stopChan := make(chan struct{})
+	return &{{ .TitleName }}Iterator{
+		C:    itemChan,
+		stop: stopChan,
+	}, itemChan, stopChan
+}

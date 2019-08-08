@@ -1,0 +1,267 @@
+package mapset{{ ToLower .TitleName }}
+
+import (
+    "sync"
+    {{ if ne .ImportPath "" }} "{{ .ImportPath }} {{ end }}
+)
+
+type threadSafe{{ .TitleName }}Set struct {
+    s threadUnsafe{{ .TitleName }}Set
+    sync.RWMutex
+}
+
+func newThreadSafe{{ .TitleName }}Set() threadSafe{{ .TitleName }}Set {
+    return threadSafe{{ .TitleName }}Set{s: newThreadUnsafe{{ .TitleName }}Set()}
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Add(i {{ .DataType }}) bool {
+    set.Lock()
+    ret := set.s.Add(i)
+    set.Unlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Contains(i ...{{ .DataType }}) bool {
+    set.RLock()
+    ret := set.s.Contains(i...)
+    set.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) IsSubset(other {{ .TitleName }}Set) bool {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    ret := set.s.IsSubset(&o.s)
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) IsProperSubset(other {{ .TitleName }}Set) bool {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    defer set.RUnlock()
+    o.RLock()
+    defer o.RUnlock()
+
+    return set.s.IsProperSubset(&o.s)
+}
+
+func (set *threadSafe{{ .TitleName }}Set) IsSuperset(other {{ .TitleName }}Set) bool {
+    return other.IsSubset(set)
+}
+
+func (set *threadSafe{{ .TitleName }}Set) IsProperSuperset(other {{ .TitleName }}Set) bool {
+    return other.IsProperSubset(set)
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Union(other {{ .TitleName }}Set) {{ .TitleName }}Set {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    unsafeUnion := set.s.Union(&o.s).(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeUnion}
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Intersect(other {{ .TitleName }}Set) {{ .TitleName }}Set {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    unsafeIntersection := set.s.Intersect(&o.s).(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeIntersection}
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Difference(other {{ .TitleName }}Set) {{ .TitleName }}Set {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    unsafeDifference := set.s.Difference(&o.s).(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeDifference}
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) SymmetricDifference(other {{ .TitleName }}Set) {{ .TitleName }}Set {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    unsafeDifference := set.s.SymmetricDifference(&o.s).(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeDifference}
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Clear() {
+    set.Lock()
+    set.s = newThreadUnsafe{{ .TitleName }}Set()
+    set.Unlock()
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Remove(i {{ .DataType }}) {
+    set.Lock()
+    delete(set.s, i)
+    set.Unlock()
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Cardinality() int {
+    set.RLock()
+    defer set.RUnlock()
+    return len(set.s)
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Each(cb func({{ .DataType }}) bool) {
+    set.RLock()
+    for elem := range set.s {
+        if cb(elem) {
+            break
+        }
+    }
+    set.RUnlock()
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Iter() <-chan {{ .DataType }} {
+    ch := make(chan {{ .DataType }})
+    go func() {
+        set.RLock()
+
+        for elem := range set.s {
+            ch <- elem
+        }
+        close(ch)
+        set.RUnlock()
+    }()
+
+    return ch
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Iterator() *{{ .TitleName }}Iterator {
+    iterator, ch, stopCh := new{{ .TitleName }}Iterator()
+
+    go func() {
+        set.RLock()
+    L:
+        for elem := range set.s {
+            select {
+            case <-stopCh:
+                break L
+            case ch <- elem:
+            }
+        }
+        close(ch)
+        set.RUnlock()
+    }()
+
+    return iterator
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Equal(other {{ .TitleName }}Set) bool {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    ret := set.s.Equal(&o.s)
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) Clone() {{ .TitleName }}Set {
+    set.RLock()
+
+    unsafeClone := set.s.Clone().(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeClone}
+    set.RUnlock()
+    return ret
+}
+
+func (set *threadSafe{{ .TitleName }}Set) String() string {
+    set.RLock()
+    ret := set.s.String()
+    set.RUnlock()
+    return ret
+}
+
+/*
+// Not yet supported
+func (set *threadSafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
+    set.RLock()
+    unsafePowerSet := set.s.PowerSet().(*threadUnsafe{{ .TitleName }}Set)
+    set.RUnlock()
+
+    ret := &threadSafe{{ .TitleName }}Set{s: newThreadUnsafe{{ .TitleName }}Set()}
+    for subset := range unsafePowerSet.Iter() {
+        unsafeSubset := subset.(*threadUnsafe{{ .TitleName }}Set)
+        ret.Add(&threadSafe{{ .TitleName }}Set{s: *unsafeSubset})
+    }
+    return ret
+}
+*/
+
+func (set *threadSafe{{ .TitleName }}Set) Pop() {{ .DataType }} {
+    set.Lock()
+    defer set.Unlock()
+    return set.s.Pop()
+}
+
+/*
+// Not yet supported
+func (set *threadSafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set {
+    o := other.(*threadSafe{{ .TitleName }}Set)
+
+    set.RLock()
+    o.RLock()
+
+    unsafeCartProduct := set.s.CartesianProduct(&o.s).(*threadUnsafe{{ .TitleName }}Set)
+    ret := &threadSafe{{ .TitleName }}Set{s: *unsafeCartProduct}
+    set.RUnlock()
+    o.RUnlock()
+    return ret
+}
+*/
+
+func (set *threadSafe{{ .TitleName }}Set) ToSlice() []{{ .DataType }} {
+    keys := make([]{{ .DataType }}, 0, set.Cardinality())
+    set.RLock()
+    for elem := range set.s {
+        keys = append(keys, elem)
+    }
+    set.RUnlock()
+    return keys
+}
+
+func (set *threadSafe{{ .TitleName }}Set) MarshalJSON() ([]byte, error) {
+    set.RLock()
+    b, err := set.s.MarshalJSON()
+    set.RUnlock()
+
+    return b, err
+}
+
+func (set *threadSafe{{ .TitleName }}Set) UnmarshalJSON(p []byte) error {
+    set.RLock()
+    err := set.s.UnmarshalJSON(p)
+    set.RUnlock()
+
+    return err
+}
