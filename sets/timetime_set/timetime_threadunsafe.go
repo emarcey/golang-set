@@ -1,4 +1,4 @@
-package mapset{{ ToLower .TitleName }}
+package mapsettimetime
 
 import (
 	"bytes"
@@ -6,19 +6,19 @@ import (
 	"fmt"
 	"strings"
 
-	{{ if ne .ImportPath "" }} "{{ .ImportPath }}" {{ end }}
+	"time"
 )
 
-type threadUnsafe{{ .TitleName }}Set map[{{ .DataType }}]struct{}
+type threadUnsafeTimeTimeSet map[time.Time]struct{}
 
 // An OrderedPair represents a 2-tuple of values.
 type OrderedPair struct {
-	First  {{ .DataType }}
-	Second {{ .DataType }}
+	First  time.Time
+	Second time.Time
 }
 
-func newThreadUnsafe{{ .TitleName }}Set() threadUnsafe{{ .TitleName }}Set {
-	return make(threadUnsafe{{ .TitleName }}Set)
+func newThreadUnsafeTimeTimeSet() threadUnsafeTimeTimeSet {
+	return make(threadUnsafeTimeTimeSet)
 }
 
 // Equal says whether two 2-tuples contain the same values in the same order.
@@ -31,7 +31,7 @@ func (pair *OrderedPair) Equal(other OrderedPair) bool {
 	return false
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Add(i {{ .DataType }}) bool {
+func (set *threadUnsafeTimeTimeSet) Add(i time.Time) bool {
 	_, found := (*set)[i]
 	if found {
 		return false //False if it existed already
@@ -41,7 +41,7 @@ func (set *threadUnsafe{{ .TitleName }}Set) Add(i {{ .DataType }}) bool {
 	return true
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Contains(i ...{{ .DataType }}) bool {
+func (set *threadUnsafeTimeTimeSet) Contains(i ...time.Time) bool {
 	for _, val := range i {
 		if _, ok := (*set)[val]; !ok {
 			return false
@@ -50,8 +50,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) Contains(i ...{{ .DataType }}) bool 
 	return true
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) IsSubset(other {{ .TitleName }}Set) bool {
-	_ = other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) IsSubset(other TimeTimeSet) bool {
+	_ = other.(*threadUnsafeTimeTimeSet)
 	if set.Cardinality() > other.Cardinality() {
 		return false
 	}
@@ -63,22 +63,22 @@ func (set *threadUnsafe{{ .TitleName }}Set) IsSubset(other {{ .TitleName }}Set) 
 	return true
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) IsProperSubset(other {{ .TitleName }}Set) bool {
+func (set *threadUnsafeTimeTimeSet) IsProperSubset(other TimeTimeSet) bool {
 	return set.IsSubset(other) && !set.Equal(other)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) IsSuperset(other {{ .TitleName }}Set) bool {
+func (set *threadUnsafeTimeTimeSet) IsSuperset(other TimeTimeSet) bool {
 	return other.IsSubset(set)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) IsProperSuperset(other {{ .TitleName }}Set) bool {
+func (set *threadUnsafeTimeTimeSet) IsProperSuperset(other TimeTimeSet) bool {
 	return set.IsSuperset(other) && !set.Equal(other)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Union(other {{ .TitleName }}Set) {{ .TitleName }}Set {
-	o := other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) Union(other TimeTimeSet) TimeTimeSet {
+	o := other.(*threadUnsafeTimeTimeSet)
 
-	unionedSet := newThreadUnsafe{{ .TitleName }}Set()
+	unionedSet := newThreadUnsafeTimeTimeSet()
 
 	for elem := range *set {
 		unionedSet.Add(elem)
@@ -89,10 +89,10 @@ func (set *threadUnsafe{{ .TitleName }}Set) Union(other {{ .TitleName }}Set) {{ 
 	return &unionedSet
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Intersect(other {{ .TitleName }}Set) {{ .TitleName }}Set {
-	o := other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) Intersect(other TimeTimeSet) TimeTimeSet {
+	o := other.(*threadUnsafeTimeTimeSet)
 
-	intersection := newThreadUnsafe{{ .TitleName }}Set()
+	intersection := newThreadUnsafeTimeTimeSet()
 	// loop over smaller set
 	if set.Cardinality() < other.Cardinality() {
 		for elem := range *set {
@@ -110,10 +110,10 @@ func (set *threadUnsafe{{ .TitleName }}Set) Intersect(other {{ .TitleName }}Set)
 	return &intersection
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Difference(other {{ .TitleName }}Set) {{ .TitleName }}Set {
-	_ = other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) Difference(other TimeTimeSet) TimeTimeSet {
+	_ = other.(*threadUnsafeTimeTimeSet)
 
-	difference := newThreadUnsafe{{ .TitleName }}Set()
+	difference := newThreadUnsafeTimeTimeSet()
 	for elem := range *set {
 		if !other.Contains(elem) {
 			difference.Add(elem)
@@ -122,27 +122,27 @@ func (set *threadUnsafe{{ .TitleName }}Set) Difference(other {{ .TitleName }}Set
 	return &difference
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) SymmetricDifference(other {{ .TitleName }}Set) {{ .TitleName }}Set {
-	_ = other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) SymmetricDifference(other TimeTimeSet) TimeTimeSet {
+	_ = other.(*threadUnsafeTimeTimeSet)
 
 	aDiff := set.Difference(other)
 	bDiff := other.Difference(set)
 	return aDiff.Union(bDiff)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Clear() {
-	*set = newThreadUnsafe{{ .TitleName }}Set()
+func (set *threadUnsafeTimeTimeSet) Clear() {
+	*set = newThreadUnsafeTimeTimeSet()
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Remove(i {{ .DataType }}) {
+func (set *threadUnsafeTimeTimeSet) Remove(i time.Time) {
 	delete(*set, i)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Cardinality() int {
+func (set *threadUnsafeTimeTimeSet) Cardinality() int {
 	return len(*set)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Each(cb func({{ .DataType }}) bool) {
+func (set *threadUnsafeTimeTimeSet) Each(cb func(time.Time) bool) {
 	for elem := range *set {
 		if cb(elem) {
 			break
@@ -150,8 +150,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) Each(cb func({{ .DataType }}) bool) 
 	}
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Iter() <-chan {{ .DataType }} {
-	ch := make(chan {{ .DataType }})
+func (set *threadUnsafeTimeTimeSet) Iter() <-chan time.Time {
+	ch := make(chan time.Time)
 	go func() {
 		for elem := range *set {
 			ch <- elem
@@ -162,8 +162,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) Iter() <-chan {{ .DataType }} {
 	return ch
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Iterator() *{{ .TitleName }}Iterator {
-	iterator, ch, stopCh := new{{ .TitleName }}Iterator()
+func (set *threadUnsafeTimeTimeSet) Iterator() *TimeTimeIterator {
+	iterator, ch, stopCh := newTimeTimeIterator()
 
 	go func() {
 	L:
@@ -180,8 +180,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) Iterator() *{{ .TitleName }}Iterator
 	return iterator
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Equal(other {{ .TitleName }}Set) bool {
-	_ = other.(*threadUnsafe{{ .TitleName }}Set)
+func (set *threadUnsafeTimeTimeSet) Equal(other TimeTimeSet) bool {
+	_ = other.(*threadUnsafeTimeTimeSet)
 
 	if set.Cardinality() != other.Cardinality() {
 		return false
@@ -194,15 +194,15 @@ func (set *threadUnsafe{{ .TitleName }}Set) Equal(other {{ .TitleName }}Set) boo
 	return true
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Clone() {{ .TitleName }}Set {
-	clonedSet := newThreadUnsafe{{ .TitleName }}Set()
+func (set *threadUnsafeTimeTimeSet) Clone() TimeTimeSet {
+	clonedSet := newThreadUnsafeTimeTimeSet()
 	for elem := range *set {
 		clonedSet.Add(elem)
 	}
 	return &clonedSet
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) String() string {
+func (set *threadUnsafeTimeTimeSet) String() string {
 	items := make([]string, 0, len(*set))
 
 	for elem := range *set {
@@ -216,28 +216,28 @@ func (pair OrderedPair) String() string {
 	return fmt.Sprintf("(%v, %v)", pair.First, pair.Second)
 }
 
-func (set *threadUnsafe{{ .TitleName }}Set) Pop() {{ .DataType }} {
+func (set *threadUnsafeTimeTimeSet) Pop() time.Time {
 	for item := range *set {
 		delete(*set, item)
 		return item
 	}
-	return {{ .DefaultValue }}
+	return time.Time{}
 }
 
 /*
 // Not yet supported
-func (set *threadUnsafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
-	powSet := NewThreadUnsafe{{ .TitleName }}Set()
-	nullset := newThreadUnsafe{{ .TitleName }}Set()
+func (set *threadUnsafeTimeTimeSet) PowerSet() TimeTimeSet {
+	powSet := NewThreadUnsafeTimeTimeSet()
+	nullset := newThreadUnsafeTimeTimeSet()
 	powSet.Add(&nullset)
 
 	for es := range *set {
-		u := newThreadUnsafe{{ .TitleName }}Set()
+		u := newThreadUnsafeTimeTimeSet()
 		j := powSet.Iter()
 		for er := range j {
-			p := newThreadUnsafe{{ .TitleName }}Set()
+			p := newThreadUnsafeTimeTimeSet()
 			if reflect.TypeOf(er).Name() == "" {
-				k := er.(*threadUnsafe{{ .TitleName }}Set)
+				k := er.(*threadUnsafeTimeTimeSet)
 				for ek := range *(k) {
 					p.Add(ek)
 				}
@@ -257,9 +257,9 @@ func (set *threadUnsafe{{ .TitleName }}Set) PowerSet() {{ .TitleName }}Set {
 
 /*
 // Not yet supported
-func (set *threadUnsafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName }}Set) {{ .TitleName }}Set {
-	o := other.(*threadUnsafe{{ .TitleName }}Set)
-	cartProduct := NewThreadUnsafe{{ .TitleName }}Set()
+func (set *threadUnsafeTimeTimeSet) CartesianProduct(other TimeTimeSet) TimeTimeSet {
+	o := other.(*threadUnsafeTimeTimeSet)
+	cartProduct := NewThreadUnsafeTimeTimeSet()
 
 	for i := range *set {
 		for j := range *o {
@@ -272,8 +272,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) CartesianProduct(other {{ .TitleName
 }
 */
 
-func (set *threadUnsafe{{ .TitleName }}Set) ToSlice() []{{ .DataType }} {
-	keys := make([]{{ .DataType }}, 0, set.Cardinality())
+func (set *threadUnsafeTimeTimeSet) ToSlice() []time.Time {
+	keys := make([]time.Time, 0, set.Cardinality())
 	for elem := range *set {
 		keys = append(keys, elem)
 	}
@@ -282,7 +282,7 @@ func (set *threadUnsafe{{ .TitleName }}Set) ToSlice() []{{ .DataType }} {
 }
 
 // MarshalJSON creates a JSON array from the set, it marshals all elements
-func (set *threadUnsafe{{ .TitleName }}Set) MarshalJSON() ([]byte, error) {
+func (set *threadUnsafeTimeTimeSet) MarshalJSON() ([]byte, error) {
 	items := make([]string, 0, set.Cardinality())
 
 	for elem := range *set {
@@ -299,8 +299,8 @@ func (set *threadUnsafe{{ .TitleName }}Set) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON recreates a set from a JSON array, it only decodes
 // primitive types. Numbers are decoded as json.Number.
-func (set *threadUnsafe{{ .TitleName }}Set) UnmarshalJSON(b []byte) error {
-	var i []{{ .DataType }}
+func (set *threadUnsafeTimeTimeSet) UnmarshalJSON(b []byte) error {
+	var i []time.Time
 
 	d := json.NewDecoder(bytes.NewReader(b))
 	d.UseNumber()
