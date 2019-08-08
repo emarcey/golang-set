@@ -39,6 +39,14 @@ func makeSetTypeTitleName(dataTypeName string) string {
 	return strings.TrimSpace(strings.TrimSuffix(titleName, "{}"))
 }
 
+func MakeDefaultSetTypes() []SetType {
+	var setTypes []SetType
+	for typeName, defaultValue := range DEFAULT_TYPES {
+		setTypes = append(setTypes, NewSetType(typeName, "", fmt.Sprintf("%v", defaultValue)))
+	}
+	return setTypes
+}
+
 type TemplateType struct {
 	TemplateFilename string
 	OutFilename      string

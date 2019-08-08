@@ -10,8 +10,22 @@ func generateSet() error {
 	var structName = flag.String("struct_name", "", "name of struct to generate")
 	var importPath = flag.String("import_path", "", "go")
 	var defaultValue = flag.String("default_value", "", "default value of struct")
+	var makeDefaults = flag.Bool("make_defaults", false, "helper to run a series of pre-defined basic types")
 
 	flag.Parse()
+
+	templateTypes := MakeTemplateTypes()
+
+	if *makeDefaults {
+		setTypes := MakeDefaultSetTypes()
+		for _, setType := range setTypes {
+			err := CreateSet(setType, templateTypes)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	if *structName == "" {
 		return NewEmptyFlagError("struct_name")
 	}
@@ -20,8 +34,6 @@ func generateSet() error {
 	}
 
 	setType := NewSetType(*structName, *importPath, *defaultValue)
-
-	templateTypes := MakeTemplateTypes()
 
 	return CreateSet(setType, templateTypes)
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"regexp"
 )
 
@@ -32,11 +31,19 @@ var (
 	STARTS_WITH_NUM_REGEXP   = regexp.MustCompile(STARTS_WITH_NUM_REGEX)
 	SPLIT_OBJECT_NAME_REGEXP = regexp.MustCompile(SPLIT_OBJECT_NAME_REGEX)
 
-	KIND_TO_SET_TYPE_NAME = map[reflect.Kind]string{
-		reflect.Array: ARRAY_SET_TYPE_NAME,
-		reflect.Chan:  CHAN_SET_TYPE_NAME,
-		reflect.Ptr:   PTR_SET_TYPE_NAME,
-		reflect.Slice: SLICE_SET_TYPE_NAME,
-		reflect.Map:   MAP_SET_TYPE_NAME,
+	DEFAULT_TYPES = map[string]interface{}{
+		"bool":    false,
+		"int":     0,
+		"int8":    0,
+		"int16":   0,
+		"int32":   0,
+		"int64":   0,
+		"uint":    0,
+		"uint8":   0,
+		"uint16":  0,
+		"uint32":  0,
+		"uint64":  0,
+		"float32": 0.0,
+		"float64": 0.0,
 	}
 )
