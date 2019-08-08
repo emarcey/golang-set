@@ -165,14 +165,14 @@ func NewFloat64SetFromSlice(s []float64) Float64Set {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeFloat64Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeFloat64Set() Float64Set {
 	set := newThreadUnsafeFloat64Set()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeFloat64SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeFloat64SetFromSlice(s []float64) Float64Set {

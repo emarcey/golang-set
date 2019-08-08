@@ -165,14 +165,14 @@ func NewFloat32SetFromSlice(s []float32) Float32Set {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeFloat32Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeFloat32Set() Float32Set {
 	set := newThreadUnsafeFloat32Set()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeFloat32SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeFloat32SetFromSlice(s []float32) Float32Set {

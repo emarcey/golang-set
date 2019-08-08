@@ -165,14 +165,14 @@ func NewBoolSetFromSlice(s []bool) BoolSet {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeBoolSet creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeBoolSet() BoolSet {
 	set := newThreadUnsafeBoolSet()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeBoolSetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeBoolSetFromSlice(s []bool) BoolSet {

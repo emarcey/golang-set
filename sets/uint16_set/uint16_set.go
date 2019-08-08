@@ -165,14 +165,14 @@ func NewUint16SetFromSlice(s []uint16) Uint16Set {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeUint16Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeUint16Set() Uint16Set {
 	set := newThreadUnsafeUint16Set()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeUint16SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeUint16SetFromSlice(s []uint16) Uint16Set {

@@ -165,14 +165,14 @@ func NewUint8SetFromSlice(s []uint8) Uint8Set {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeUint8Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeUint8Set() Uint8Set {
 	set := newThreadUnsafeUint8Set()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeUint8SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeUint8SetFromSlice(s []uint8) Uint8Set {

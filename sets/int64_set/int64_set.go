@@ -165,14 +165,14 @@ func NewInt64SetFromSlice(s []int64) Int64Set {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeInt64Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeInt64Set() Int64Set {
 	set := newThreadUnsafeInt64Set()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeInt64SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeInt64SetFromSlice(s []int64) Int64Set {

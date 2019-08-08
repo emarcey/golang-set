@@ -169,14 +169,14 @@ func NewTimeTimeSetFromSlice(s []time.Time) TimeTimeSet {
 	return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafeTimeTimeSet creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafeTimeTimeSet() TimeTimeSet {
 	set := newThreadUnsafeTimeTimeSet()
 	return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafeTimeTimeSetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafeTimeTimeSetFromSlice(s []time.Time) TimeTimeSet {

@@ -171,14 +171,14 @@ func New{{ .TitleName }}SetFromSlice(s []{{ .DataType }}) {{ .TitleName }}Set {
     return a
 }
 
-// NewThreadUnsafeSet creates and returns a reference to an empty set.
+// NewThreadUnsafe{{ .TitleName }}Set creates and returns a reference to an empty set.
 // Operations on the resulting set are not thread-safe.
 func NewThreadUnsafe{{ .TitleName }}Set() {{ .TitleName }}Set {
     set := newThreadUnsafe{{ .TitleName }}Set()
     return &set
 }
 
-// NewThreadUnsafeSetFromSlice creates and returns a reference to a
+// NewThreadUnsafe{{ .TitleName }}SetFromSlice creates and returns a reference to a
 // set from an existing slice.  Operations on the resulting set are
 // not thread-safe.
 func NewThreadUnsafe{{ .TitleName }}SetFromSlice(s []{{ .DataType }}) {{ .TitleName }}Set {
