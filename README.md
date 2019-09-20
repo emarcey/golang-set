@@ -13,7 +13,7 @@ Doesn't support Cartesian Products or Power Sets yet.
 
 To build
 ```
-go build -o generate_set_exec ./generate_set_exec
+go build -o generate_set_exec ./generate_set
 ```
 
 To generate a set for the `time.Time` object
@@ -23,5 +23,5 @@ To generate a set for the `time.Time` object
 
 To generate a bunch of basic types
 ```
-./generate_set_exec -make_defaults=`
+./generate_set_exec -make_defaults=`true`
 ```

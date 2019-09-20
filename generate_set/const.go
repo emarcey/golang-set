@@ -45,5 +45,6 @@ var (
 		"uint64":  0,
 		"float32": 0.0,
 		"float64": 0.0,
+		"string":  `""`,
 	}
 )
